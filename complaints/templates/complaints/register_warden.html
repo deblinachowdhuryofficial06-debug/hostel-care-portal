@@ -1,0 +1,30 @@
+{% extends 'complaints/base.html' %}
+
+{% block content %}
+<div class="card shadow border-0 mx-auto" style="max-width: 500px; border-radius: 12px;">
+    <div class="card-body p-4">
+        <h3 class="card-title text-center mb-2 text-success fw-bold">Warden Registration</h3>
+        <p class="text-center text-muted small mb-4">Register an administrative management security console account</p>
+        
+        <form method="POST" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success text-white w-100 py-2 mt-2 fw-bold shadow-sm">Create Warden Account</button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <p class="text-muted small mb-0">Already have an administrative account? <a href="{% url 'login' %}" class="text-decoration-none fw-bold text-success">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

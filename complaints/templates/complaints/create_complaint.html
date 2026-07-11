@@ -1,0 +1,21 @@
+{% extends 'complaints/base.html' %}
+
+{% block content %}
+<div class="card shadow border-0 mx-auto" style="max-width: 600px;">
+    <div class="card-body p-4">
+        <h3 class="card-title mb-3 text-dark">File a Room Issue</h3>
+        <p class="text-muted small">Please fill out the form details details clearly for the hostel warden review team.</p>
+        <hr>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="{% url 'dashboard' %}" class="btn btn-light border">Go Back</a>
+                <button type="submit" class="btn btn-primary px-4">Submit Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

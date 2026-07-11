@@ -1,0 +1,49 @@
+{% extends 'complaints/base.html' %}
+
+{% block content %}
+<div class="text-center my-5 py-4">
+    <h1 class="display-4 fw-extrabold text-dark tracking-tight mb-2" style="font-weight: 800;">Welcome to <span class="text-primary">HostelCare</span> Portal</h1>
+    <p class="text-muted mx-auto lead" style="max-width: 600px; font-size: 1.1rem;">Select your secure system access pipeline below to interact with your complaints and housing logs workspace.</p>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4 justify-content-center px-2 mb-5">
+    
+    <div class="col" style="max-width: 440px;">
+        <div class="card h-100 shadow border-0 p-4 bg-white transition-hover" style="border-radius: 16px; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+            <div class="card-body d-flex flex-column align-items-center text-center">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle mb-4 text-primary fs-1 d-flex align-items-center justify-content-center" style="width: 75px; height: 75px;">
+                    🎓
+                </div>
+                <h3 class="card-title fw-bold text-dark mb-2">Student Portal</h3>
+                <p class="text-muted small mb-4 flex-grow-1 px-2">File active maintenance issues, trace ongoing ticket status updates, and view resolution media logs instantly.</p>
+                
+                <a href="{% url 'login' %}?role=student" class="btn btn-primary w-100 py-2.5 fw-bold rounded-3 shadow-sm mb-3">Sign In as Student</a>
+                <a href="{% url 'register_student' %}" class="text-decoration-none small text-primary fw-semibold">New student? Create an account →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col" style="max-width: 440px;">
+        <div class="card h-100 shadow border-0 p-4 bg-white transition-hover" style="border-radius: 16px; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+            <div class="card-body d-flex flex-column align-items-center text-center">
+                <div class="bg-success bg-opacity-10 p-3 rounded-circle mb-4 text-success fs-1 d-flex align-items-center justify-content-center" style="width: 75px; height: 75px;">
+                    🗝️
+                </div>
+                <h3 class="card-title fw-bold text-dark mb-2">Warden Console</h3>
+                <p class="text-muted small mb-4 flex-grow-1 px-2">Review macro floor operational logistics logs, dispatch resolution workers, and authorize status pipelines.</p>
+                
+                <a href="{% url 'login' %}?role=warden" class="btn btn-success text-white w-100 py-2.5 fw-bold rounded-3 shadow-sm mb-3">Sign In as Warden</a>
+                <a href="{% url 'register_warden' %}" class="text-decoration-none small text-success fw-semibold">New warden? Register here →</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.12)!important;
+    }
+</style>
+{% endblock %}
