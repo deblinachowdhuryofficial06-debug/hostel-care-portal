@@ -22,11 +22,11 @@ def warden_register(request):
         form = WardenRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect('/login/?role=warden')
     else:
         form = WardenRegistrationForm()
     return render(request, 'complaints/register_warden.html', {'form': form})
-
+            
 def login_view(request):
     # Read whether the user clicked the student or warden button (defaults to student)
     role = request.GET.get('role', 'student')
@@ -82,26 +82,14 @@ def delete_complaint(request, pk):
     return render(request, 'complaints/delete_confirm.html', {'complaint': complaint})
 @login_required(login_url='login')
 def warden_dashboard(request):
-    # Security Check: Redirect normal students away if they try to access this URL path
+    # Security check: If a student accidentally tries to access this, kick them back
     if not request.user.is_staff:
         return redirect('dashboard')
         
-    # Read: Fetch EVERY SINGLE complaint in the system
-    all_complaints = Complaint.objects.all().order_by('-created_at')
+    # 🌟 FETCH ALL COMPLAINTS FOR THE WARDEN (Pending, In Progress, and Resolved)
+    complaints = Complaint.objects.all().order_by('-created_at')
     
-    # Calculate simple statistics to show on the screen
-    total = all_complaints.count()
-    pending = all_complaints.filter(status='Pending').count()
-    resolved = all_complaints.filter(status='Resolved').count()
-    
-    context = {
-        'complaints': all_complaints,
-        'total': total,
-        'pending': pending,
-        'resolved': resolved,
-    }
-    return render(request, 'complaints/warden_dashboard.html', context)
-
+    return render(request, 'complaints/warden_dashboard.html', {'complaints': complaints})
 @login_required(login_url='login')
 def update_status(request, pk, new_status):
     # Update: Let the warden quickly swap the status tag of a complaint
