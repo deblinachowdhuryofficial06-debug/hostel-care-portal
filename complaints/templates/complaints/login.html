@@ -35,8 +35,15 @@
             {% endif %}
         </form>
         
-        <div class="text-center mt-3">
-            <p class="text-muted small mb-0">Don't have an account? <a href="{% url 'home_portal' %}" class="text-decoration-none fw-bold">Register here</a></p>
+       <div class="text-center mt-3">
+            <p class="text-muted small mb-0">
+                Don't have an account? 
+                {% if role == 'warden' %}
+                    <a href="{% url 'register_warden' %}" class="text-decoration-none fw-bold text-success">Register here</a>
+                {% else %}
+                    <a href="{% url 'register_student' %}" class="text-decoration-none fw-bold text-primary">Register here</a>
+                {% endif %}
+            </p>
         </div>
     </div>
 </div>
