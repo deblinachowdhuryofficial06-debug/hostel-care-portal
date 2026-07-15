@@ -28,7 +28,7 @@ def warden_register(request):
     return render(request, 'complaints/register_warden.html', {'form': form})
             
 def login_view(request):
-    # Read whether the user clicked the student or warden button (defaults to student)
+    # This explicitly reads ?role=student or ?role=warden from the URL string path
     role = request.GET.get('role', 'student')
 
     if request.method == 'POST':
@@ -39,7 +39,6 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                # Smart redirect based on who they are
                 if user.is_staff:
                     return redirect('warden_dashboard')
                 return redirect('dashboard')
