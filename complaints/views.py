@@ -17,17 +17,17 @@ def home_portal(request):
         return redirect('dashboard')
     return render(request, 'complaints/home_portal.html')
 
-
 def register_student(request):
-    """
-    Registers regular students (is_staff = False).
-    """
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.is_staff = False       # 🌟 GUARANTEE: Force student role
+            user.is_superuser = False   # 🌟 GUARANTEE: Force non-admin
+            user.save()
+            
             login(request, user)
-            return redirect('dashboard')
+            return redirect('dashboard') # 🌟 Directs straight to Student Dashboard
     else:
         form = StudentRegistrationForm()
     return render(request, 'complaints/register_student.html', {'form': form})
