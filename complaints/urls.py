@@ -11,7 +11,7 @@ urlpatterns = [
     path('register/warden/', views.warden_register, name='register_warden'),
     
     # Dashboards & Actions
-    path('student/dashboard/', views.student_dashboard, name='dashboard'),
+    path('student/dashboard/', views.dashboard, name='dashboard'),
     path('create/', views.create_complaint, name='create_complaint'),
     path('delete/<int:pk>/', views.delete_complaint, name='delete_complaint'),
     path('warden/', views.warden_dashboard, name='warden_dashboard'),
