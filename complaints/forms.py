@@ -16,12 +16,12 @@ class StudentRegistrationForm(UserCreationForm):
         model = User
         fields = ['username', 'email']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs.update({'class': 'form-control', 'placeholder': f'Enter {field_name}'})
-            field.help_text = None 
-
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_staff = False  # 🌟 MUST BE FALSE for regular students!
+        if commit:
+            user.save()
+        return user
 class WardenRegistrationForm(UserCreationForm):
     class Meta:
         model = User

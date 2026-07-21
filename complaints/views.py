@@ -1,118 +1,180 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from .models import Complaint, Comment
-from .forms import ComplaintForm
+from .forms import StudentRegistrationForm, WardenRegistrationForm, ComplaintForm, CommentForm
 
-from .forms import StudentRegistrationForm, WardenRegistrationForm
+# --- HOME & AUTH VIEWS ---
 
-def student_register(request):
+def home_portal(request):
+    """
+    Public Home Page: Choice portal to enter as Student or Warden.
+    """
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('warden_dashboard')
+        return redirect('dashboard')
+    return render(request, 'complaints/home_portal.html')
+
+
+def register_student(request):
+    """
+    Registers regular students (is_staff = False).
+    """
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')
+            user = form.save()
+            login(request, user)
+            return redirect('dashboard')
     else:
         form = StudentRegistrationForm()
     return render(request, 'complaints/register_student.html', {'form': form})
 
-def warden_register(request):
+
+def register_warden(request):
+    """
+    Registers wardens (is_staff = True automatically).
+    """
     if request.method == 'POST':
         form = WardenRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('/login/?role=warden')
+            user = form.save()
+            login(request, user)
+            return redirect('warden_dashboard')
     else:
         form = WardenRegistrationForm()
     return render(request, 'complaints/register_warden.html', {'form': form})
-            
+
+
+def login_view(request):
+    """
+    Handles login and routes users strictly based on their is_staff flag.
+    """
+    role = request.GET.get('role', 'student')
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                # SMART ROUTING: Staff/Warden -> Warden Dashboard, Student -> Student Dashboard
+                if user.is_staff:
+                    return redirect('warden_dashboard')
+                return redirect('dashboard')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'complaints/login.html', {'form': form, 'role': role})
+
 
 def logout_view(request):
+    """
+    Logs out the user and redirects back to the main Homepage.
+    """
     logout(request)
-    return redirect('login')
+    return redirect('home_portal')
 
-# --- COMPLAINT CRUD VIEWS ---
+
+# --- DASHBOARDS ---
+
 @login_required(login_url='login')
 def dashboard(request):
-    # Fetch complaints logged by THIS logged-in student
+    """
+    Student Portal Dashboard: Shows complaints created ONLY by the logged-in student.
+    """
+    # Guardrail: If a Warden lands here, automatically send them to Warden Dashboard
+    if request.user.is_staff:
+        return redirect('warden_dashboard')
+
     complaints = Complaint.objects.filter(student=request.user).order_by('-created_at')
-    
-    # 🌟 Make sure the template name here is 'complaints/dashboard.html'
     return render(request, 'complaints/dashboard.html', {'complaints': complaints})
+
+
+@login_required(login_url='login')
+def warden_dashboard(request):
+    """
+    Warden Dashboard: Shows ALL hostel complaints globally across all students.
+    """
+    # Guardrail: If a regular Student tries to access, send them back to Student Dashboard
+    if not request.user.is_staff:
+        return redirect('dashboard')
+
+    complaints = Complaint.objects.all().order_by('-created_at')
+    return render(request, 'complaints/warden_dashboard.html', {'complaints': complaints})
+
+
+# --- COMPLAINT ACTIONS ---
+
 @login_required(login_url='login')
 def create_complaint(request):
-    # Create: Handle a student submitting a new complaint form
+    """
+    Allows a student to file a new complaint.
+    """
+    if request.user.is_staff:
+        return redirect('warden_dashboard')
+
     if request.method == 'POST':
-        # request.FILES handles the uploaded complaint images
-        form = ComplaintForm(request.POST, request.FILES)
+        form = ComplaintForm(request.POST)
         if form.is_valid():
             complaint = form.save(commit=False)
-            complaint.student = request.user # Lock this complaint to the logged-in student
+            complaint.student = request.user
             complaint.save()
             return redirect('dashboard')
     else:
         form = ComplaintForm()
+
     return render(request, 'complaints/create_complaint.html', {'form': form})
 
-@login_required(login_url='login')
-def delete_complaint(request, pk):
-    # Delete: Allow a student to cancel/delete their own complaint
-    complaint = get_object_or_404(Complaint, pk=pk, student=request.user)
-    if request.method == 'POST':
-        complaint.delete()
-        return redirect('dashboard')
-    return render(request, 'complaints/delete_confirm.html', {'complaint': complaint})
-@login_required(login_url='login')
-def warden_dashboard(request):
-    # Security check: If a student accidentally tries to access this, kick them back
-    if not request.user.is_staff:
-        return redirect('dashboard')
-        
-    # 🌟 FETCH ALL COMPLAINTS FOR THE WARDEN (Pending, In Progress, and Resolved)
-    complaints = Complaint.objects.all().order_by('-created_at')
-    
-    return render(request, 'complaints/warden_dashboard.html', {'complaints': complaints})
-@login_required(login_url='login')
-def update_status(request, pk, new_status):
-    # Update: Let the warden quickly swap the status tag of a complaint
-    if request.user.is_staff:
-        complaint = get_object_or_404(Complaint, pk=pk)
-        complaint.status = new_status
-        complaint.save()
-        return redirect('warden_dashboard')
-    return redirect('dashboard')
-def home_portal(request):
-    # This view now always shows the choice landing page, even if you are logged in!
-    return render(request, 'complaints/home_portal.html')
-        
-    # If they are not logged in, show them the choice landing page
-    return render(request, 'complaints/home_portal.html')
+
 @login_required(login_url='login')
 def complaint_detail(request, pk):
-    # Fetch the specific complaint
-    if request.user.is_staff:
-        # Wardens can view any student's complaint
-        complaint = get_object_or_404(Complaint, pk=pk)
-    else:
-        # Students can only view their own private complaints
-        complaint = get_object_or_404(Complaint, pk=pk, student=request.user)
+    """
+    Chat & Conversation page between Student and Warden for a specific complaint.
+    """
+    complaint = get_object_or_404(Complaint, pk=pk)
 
-    # Handle a new comment being submitted submitted
-    if request.method == 'POST':
-        comment_text = request.POST.get('comment_text')
-        if comment_text:
-            Comment.objects.create(
-                complaint=complaint,
-                author=request.user,
-                text=comment_text
-            )
-            return redirect('complaint_detail', pk=complaint.pk)
+    # Security: Only the owner student OR a warden can view the conversation thread
+    if not request.user.is_staff and complaint.student != request.user:
+        return redirect('dashboard')
 
-    # Fetch all previous comments linked to this ticket
     comments = complaint.comments.all().order_by('created_at')
-    
+
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.complaint = complaint
+            comment.author = request.user
+            comment.save()
+            return redirect('complaint_detail', pk=pk)
+    else:
+        comment_form = CommentForm()
+
     return render(request, 'complaints/complaint_detail.html', {
         'complaint': complaint,
-        'comments': comments
+        'comments': comments,
+        'comment_form': comment_form
     })
+
+
+@login_required(login_url='login')
+def update_status(request, pk):
+    """
+    Allows Warden to update the status (Pending, In Progress, Resolved) directly.
+    """
+    if not request.user.is_staff:
+        return redirect('dashboard')
+
+    complaint = get_object_or_404(Complaint, pk=pk)
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        if new_status in ['Pending', 'In Progress', 'Resolved']:
+            complaint.status = new_status
+            complaint.save()
+
+    return redirect('warden_dashboard')
