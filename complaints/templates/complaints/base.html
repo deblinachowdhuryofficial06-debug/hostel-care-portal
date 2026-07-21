@@ -3,86 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HostelCare - Portal</title>
+    <title>HostelCare - Premium Student & Warden Portal</title>
+    
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-surface: #f8fafc;
+            --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         }
-        .navbar-brand {
-            font-weight: 700;
-            letter-spacing: -0.5px;
+
+        body {
+            background-color: var(--bg-surface);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-custom {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .brand-logo {
+            font-weight: 800;
+            font-size: 1.35rem;
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
 
-    <!-- Main Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm">
+    <!-- Premium Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3 sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home_portal' %}">
-                <span class="fs-4">🏫</span> HostelCare
+                <span class="fs-4">🏢</span> 
+                <span class="brand-logo">HostelCare</span>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-row navbar-nav ms-auto align-items-center gap-2">
-                    
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
                     {% if user.is_authenticated %}
-                        <!-- Role Badge Indicator -->
-                        <li class="nav-item me-2">
-                            {% if user.is_staff %}
-                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill small">
-                                    Role: Warden ({{ user.username }})
-                                </span>
-                            {% else %}
-                                <span class="badge bg-info text-dark px-3 py-2 rounded-pill small">
-                                    Role: Student ({{ user.username }})
-                                </span>
-                            {% endif %}
-                        </li>
-
-                        <!-- Smart Dashboard Navigation Link -->
                         <li class="nav-item">
                             {% if user.is_staff %}
-                                <a class="btn btn-outline-light btn-sm px-3" href="{% url 'warden_dashboard' %}">Warden Dashboard</a>
+                                <span class="badge bg-purple-subtle text-purple px-3 py-2 rounded-pill small fw-semibold" style="background: #f3e8ff; color: #7e22ce;">
+                                    🛡️ Warden: {{ user.username }}
+                                </span>
                             {% else %}
-                                <a class="btn btn-outline-light btn-sm px-3" href="{% url 'dashboard' %}">Student Dashboard</a>
+                                <span class="badge bg-indigo-subtle text-indigo px-3 py-2 rounded-pill small fw-semibold" style="background: #e0e7ff; color: #3730a3;">
+                                    🎓 Student: {{ user.username }}
+                                </span>
                             {% endif %}
                         </li>
 
-                        <!-- Logout Button -->
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-danger btn-sm px-3 fw-medium" href="{% url 'logout' %}">Logout</a>
+                        <li class="nav-item">
+                            {% if user.is_staff %}
+                                <a class="btn btn-outline-light btn-sm rounded-pill px-4" href="{% url 'warden_dashboard' %}">Dashboard</a>
+                            {% else %}
+                                <a class="btn btn-outline-light btn-sm rounded-pill px-4" href="{% url 'dashboard' %}">Dashboard</a>
+                            {% endif %}
                         </li>
 
+                        <li class="nav-item">
+                            <a class="btn btn-danger btn-sm rounded-pill px-4 fw-medium" href="{% url 'logout' %}">Logout</a>
+                        </li>
                     {% else %}
-                        <!-- Public Visitor Links -->
                         <li class="nav-item">
-                            <a class="btn btn-outline-light btn-sm px-3 me-2" href="{% url 'login' %}?role=student">Student Login</a>
+                            <a class="text-light text-decoration-none small fw-medium me-2" href="{% url 'login' %}?role=student">Student Sign In</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-primary btn-sm px-3 fw-medium" href="{% url 'login' %}?role=warden">Warden Login</a>
+                            <a class="btn btn-primary-custom btn-sm rounded-pill px-4 py-2" href="{% url 'login' %}?role=warden">Warden Portal</a>
                         </li>
                     {% endif %}
-
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Page Content Container -->
-    <main class="container py-4">
+    <!-- Main Content Body -->
+    <main class="container my-auto py-5">
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- Bootstrap 5 JS Bundle -->
+    <footer class="text-center py-4 text-muted small border-top mt-auto bg-white">
+        © 2026 HostelCare Management System. All rights reserved.
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,24 +1,70 @@
 {% extends 'complaints/base.html' %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center my-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-0" style="border-radius: 16px;">
-            <div class="card-body p-4 p-md-5">
-                
-                <!-- Header -->
-                <div class="text-center mb-4">
-                    <div class="fs-1 mb-2">🎓</div>
-                    <h3 class="fw-bold text-dark mb-1">Student Registration</h3>
-                    <p class="text-muted small">Create your student account to file and track hostel complaints.</p>
-                </div>
+<style>
+    .auth-card {
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+    }
+    .auth-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+        padding: 2.5rem 2rem;
+    }
+    .form-control-custom {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background-color: #f8fafc;
+    }
+    .form-control-custom:focus {
+        background-color: #ffffff;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        outline: none;
+    }
+    .btn-submit {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        border: none;
+        color: white;
+        border-radius: 12px;
+        padding: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        transition: all 0.25s ease;
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4);
+        color: white;
+    }
+</style>
 
-                <!-- Registration Form -->
+<div class="row justify-content-center align-items-center">
+    <div class="col-md-7 col-lg-5">
+        <div class="auth-card">
+            
+            <!-- Header Banner -->
+            <div class="auth-header text-center position-relative">
+                <div class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-1.5 mb-3 fs-6">
+                    🎓 Student Portal
+                </div>
+                <h3 class="fw-bold mb-1">Create Account</h3>
+                <p class="text-white-50 small mb-0">Join HostelCare to manage your room & lodging complaints</p>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-4 p-md-5">
                 <form method="POST" action="{% url 'register_student' %}">
                     {% csrf_token %}
-                    
+
                     {% if form.non_field_errors %}
-                        <div class="alert alert-danger py-2 small mb-3">
+                        <div class="alert alert-danger rounded-3 py-2 small mb-4">
                             {% for error in form.non_field_errors %}
                                 <div>{{ error }}</div>
                             {% endfor %}
@@ -26,48 +72,46 @@
                     {% endif %}
 
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-secondary">
+                        <div class="mb-4">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-dark mb-1">
                                 {{ field.label }}
                             </label>
                             <input 
                                 type="{{ field.field.widget.input_type|default:'text' }}" 
                                 name="{{ field.html_name }}" 
                                 id="{{ field.id_for_label }}" 
-                                class="form-control {% if field.errors %}is-invalid{% endif %}" 
-                                placeholder="Enter {{ field.label|lower }}"
-                                style="border-radius: 8px;"
+                                class="form-control form-control-custom {% if field.errors %}is-invalid{% endif %}" 
+                                placeholder="Enter your {{ field.label|lower }}"
                                 required
                             >
                             {% if field.errors %}
-                                <div class="invalid-feedback small">
+                                <div class="invalid-feedback small mt-1">
                                     {% for error in field.errors %}
                                         <div>{{ error }}</div>
                                     {% endfor %}
                                 </div>
                             {% endif %}
                             {% if field.help_text %}
-                                <div class="form-text text-muted small" style="font-size: 0.75rem;">
+                                <div class="form-text text-muted small mt-1" style="font-size: 0.75rem;">
                                     {{ field.help_text|safe }}
                                 </div>
                             {% endif %}
                         </div>
                     {% endfor %}
 
-                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold mt-3 shadow-sm" style="border-radius: 10px;">
-                        Register as Student
+                    <button type="submit" class="btn btn-submit w-100 mt-2 shadow">
+                        Complete Registration →
                     </button>
                 </form>
 
-                <!-- Footer Link -->
                 <div class="text-center mt-4 pt-3 border-top">
                     <p class="small text-muted mb-0">
-                        Already have a student account? 
-                        <a href="{% url 'login' %}?role=student" class="fw-bold text-primary text-decoration-none">Log in here</a>
+                        Already have an account? 
+                        <a href="{% url 'login' %}?role=student" class="fw-bold text-indigo text-decoration-none ms-1" style="color: #4f46e5;">Log in</a>
                     </p>
                 </div>
-
             </div>
+
         </div>
     </div>
 </div>
