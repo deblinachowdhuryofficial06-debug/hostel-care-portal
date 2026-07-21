@@ -35,51 +35,31 @@
             </thead>
             <tbody>
                 {% for c in complaints %}
-                    <tr>
-                        <!-- Room Number Tag -->
-                        <td class="ps-3 fw-bold text-secondary">
-                            <span class="badge bg-light text-dark border px-2.5 py-1.5">🚪 {{ c.room_number }}</span>
-                        </td>
-                        
-                        <!-- Clickable Complaint Title for Chatting -->
-                        <td>
-                            <a href="{% url 'complaint_detail' c.pk %}" class="fw-bold text-primary text-decoration-none transition-hover d-block">
-                                {{ c.title }}
-                            </a>
-                            <small class="text-muted d-block text-truncate" style="max-width: 300px;">{{ c.description }}</small>
-                        </td>
-                        
-                        <!-- Student Name -->
-                        <td class="text-dark fw-medium">
-                            {{ c.student.username }}
-                        </td>
-                        
-                        <!-- Formatted Date -->
-                        <td class="text-muted small">
-                            {{ c.created_at|date:"M d, Y" }}
-                        </td>
-                        
-                        <!-- Dynamic Color Status Badges -->
-                        <td class="text-center">
-                            {% if c.status == 'Pending' %}
-                                <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-2 rounded-pill fw-bold" style="font-size: 0.75rem;">⚠️ Pending</span>
-                            {% elif c.status == 'In Progress' %}
-                                <span class="badge bg-info-subtle text-info border border-info px-3 py-2 rounded-pill fw-bold" style="font-size: 0.75rem;">⚙️ In Progress</span>
-                            {% else %}
-                                <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill fw-bold" style="font-size: 0.75rem;">✅ Resolved</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% empty %}
-                    <!-- Empty Database State Screen -->
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
-                            <div class="fs-1 mb-2">🎉</div>
-                            <p class="fw-semibold mb-1">No complaints found!</p>
-                            <p class="small text-secondary">All clear. There are currently no active problems logged by students.</p>
-                        </td>
-                    </tr>
-                {% endfor %}
+    <tr>
+        <td>🚪 Room {{ c.room_number }}</td>
+        <td>
+            <a href="{% url 'complaint_detail' c.pk %}" class="fw-bold text-primary text-decoration-none">
+                {{ c.title }}
+            </a>
+            <small class="text-muted d-block">{{ c.description }}</small>
+        </td>
+        <td>{{ c.student.username }}</td>
+        <td>{{ c.created_at|date:"M d, Y" }}</td>
+        <td>
+            {% if c.status == 'Pending' %}
+                <span class="badge bg-warning text-dark">⚠️ Pending</span>
+            {% elif c.status == 'In Progress' %}
+                <span class="badge bg-info text-white">⚙️ In Progress</span>
+            {% else %}
+                <span class="badge bg-success">✅ Resolved</span>
+            {% endif %}
+        </td>
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="5" class="text-center py-4 text-muted">No complaints found in the system.</td>
+    </tr>
+{% endfor %}
             </tbody>
         </table>
     </div>
