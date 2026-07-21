@@ -84,16 +84,15 @@ def logout_view(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    """
-    Student Portal Dashboard: Shows complaints created ONLY by the logged-in student.
-    """
-    # Guardrail: If a Warden lands here, automatically send them to Warden Dashboard
+    print(f"DEBUG: User logged in = {request.user.username}")
+    print(f"DEBUG: is_staff = {request.user.is_staff}")
+    
     if request.user.is_staff:
+        print("DEBUG: Redirecting because user IS STAFF!")
         return redirect('warden_dashboard')
 
     complaints = Complaint.objects.filter(student=request.user).order_by('-created_at')
     return render(request, 'complaints/dashboard.html', {'complaints': complaints})
-
 
 @login_required(login_url='login')
 def warden_dashboard(request):

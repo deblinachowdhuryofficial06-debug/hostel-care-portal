@@ -18,7 +18,8 @@ class StudentRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_staff = False  # 🌟 MUST BE FALSE for regular students!
+        user.is_staff = False 
+        user.is_superuser = False # 🌟 MUST BE FALSE for regular students!
         if commit:
             user.save()
         return user
