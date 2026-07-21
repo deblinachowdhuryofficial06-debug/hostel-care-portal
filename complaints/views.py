@@ -81,27 +81,24 @@ def logout_view(request):
 
 
 # --- DASHBOARDS ---
-
 @login_required(login_url='login')
 def dashboard(request):
-    # Temporarily commented out to prevent ANY automatic redirection to Warden page:
-    # if request.user.is_staff:
-    #     return redirect('warden_dashboard')
-
+    """
+    Student Dashboard View
+    """
     complaints = Complaint.objects.filter(student=request.user).order_by('-created_at')
-    return render(request, 'complaints/dashboard.html', {'complaints': complaints})
+    # 🌟 Point directly to student_dashboard.html
+    return render(request, 'complaints/student_dashboard.html', {'complaints': complaints})
+
+
 @login_required(login_url='login')
 def warden_dashboard(request):
     """
-    Warden Dashboard: Shows ALL hostel complaints globally across all students.
+    Warden Dashboard View
     """
-    # Guardrail: If a regular Student tries to access, send them back to Student Dashboard
-    if not request.user.is_staff:
-        return redirect('dashboard')
-
     complaints = Complaint.objects.all().order_by('-created_at')
+    # 🌟 Point directly to warden_dashboard.html
     return render(request, 'complaints/warden_dashboard.html', {'complaints': complaints})
-
 
 # --- COMPLAINT ACTIONS ---
 
