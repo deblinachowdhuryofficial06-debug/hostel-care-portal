@@ -84,16 +84,12 @@ def logout_view(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    print(f"DEBUG: User logged in = {request.user.username}")
-    print(f"DEBUG: is_staff = {request.user.is_staff}")
-    
-    if request.user.is_staff:
-        print("DEBUG: Redirecting because user IS STAFF!")
-        return redirect('warden_dashboard')
+    # Temporarily commented out to prevent ANY automatic redirection to Warden page:
+    # if request.user.is_staff:
+    #     return redirect('warden_dashboard')
 
     complaints = Complaint.objects.filter(student=request.user).order_by('-created_at')
     return render(request, 'complaints/dashboard.html', {'complaints': complaints})
-
 @login_required(login_url='login')
 def warden_dashboard(request):
     """
