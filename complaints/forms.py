@@ -35,7 +35,8 @@ class WardenRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_staff = True  # Forces this user to automatically be a Warden/Staff
+        user.is_staff = True
+        user.is_superuser = False 
         if commit:
             user.save()
         return user
