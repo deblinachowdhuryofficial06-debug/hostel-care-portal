@@ -1,29 +1,73 @@
 {% extends 'complaints/base.html' %}
 
 {% block content %}
-<div class="card shadow border-0 mx-auto" style="max-width: 500px; border-radius: 12px;">
-    <div class="card-body p-4">
-        <h3 class="card-title text-center mb-2 text-primary fw-bold">Student Registration</h3>
-        <p class="text-center text-muted small mb-4">Create your student residential portal account</p>
-        
-        <form method="POST" novalidate>
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-secondary small">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-danger small mt-1">
-                            {{ field.errors|striptags }}
+<div class="row justify-content-center align-items-center my-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0" style="border-radius: 16px;">
+            <div class="card-body p-4 p-md-5">
+                
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <div class="fs-1 mb-2">🎓</div>
+                    <h3 class="fw-bold text-dark mb-1">Student Registration</h3>
+                    <p class="text-muted small">Create your student account to file and track hostel complaints.</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form method="POST" action="{% url 'register_student' %}">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 small mb-3">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
                         </div>
                     {% endif %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-secondary">
+                                {{ field.label }}
+                            </label>
+                            <input 
+                                type="{{ field.field.widget.input_type|default:'text' }}" 
+                                name="{{ field.html_name }}" 
+                                id="{{ field.id_for_label }}" 
+                                class="form-control {% if field.errors %}is-invalid{% endif %}" 
+                                placeholder="Enter {{ field.label|lower }}"
+                                style="border-radius: 8px;"
+                                required
+                            >
+                            {% if field.errors %}
+                                <div class="invalid-feedback small">
+                                    {% for error in field.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if field.help_text %}
+                                <div class="form-text text-muted small" style="font-size: 0.75rem;">
+                                    {{ field.help_text|safe }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold mt-3 shadow-sm" style="border-radius: 10px;">
+                        Register as Student
+                    </button>
+                </form>
+
+                <!-- Footer Link -->
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="small text-muted mb-0">
+                        Already have a student account? 
+                        <a href="{% url 'login' %}?role=student" class="fw-bold text-primary text-decoration-none">Log in here</a>
+                    </p>
                 </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary w-100 py-2 mt-2 fw-bold shadow-sm">Create Student Account</button>
-        </form>
-        
-        <div class="text-center mt-3">
-            <p class="text-muted small mb-0">Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Login here</a></p>
+
+            </div>
         </div>
     </div>
 </div>
