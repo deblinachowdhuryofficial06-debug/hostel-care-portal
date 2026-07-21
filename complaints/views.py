@@ -48,7 +48,7 @@ def login_view(request):
     return render(request, 'complaints/login.html', {'form': form, 'role': role})
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('home_portal')
 
 # --- COMPLAINT CRUD VIEWS ---
 @login_required(login_url='login')

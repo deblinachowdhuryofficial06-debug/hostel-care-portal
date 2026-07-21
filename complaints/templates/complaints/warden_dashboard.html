@@ -12,11 +12,11 @@
     </div>
 </div>
 
-<!-- Alert Reminder Box to guide the Warden -->
+<!-- Alert Reminder Box -->
 <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-3 mb-4" style="border-radius: 12px;">
     <span class="fs-4">💡</span>
     <p class="mb-0 small fw-medium text-secondary">
-        <strong>Quick Tip:</strong> Click on any complaint's title link to chat directly with the student, review details, or update the status.
+        <strong>Quick Tip:</strong> Click on any complaint's title link to chat directly with the student, or use the status menu on the right to mark it as Resolved!
     </p>
 </div>
 
@@ -30,43 +30,62 @@
                     <th scope="col">Complaint Title</th>
                     <th scope="col">Filed By</th>
                     <th scope="col">Date Submitted</th>
-                    <th scope="col" class="text-center">Current Status</th>
+                    <th scope="col" class="text-center">Current Status / Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for c in complaints %}
-    <tr>
-        <td>🚪 Room {{ c.room_number }}</td>
-        <td>
-            <a href="{% url 'complaint_detail' c.pk %}" class="fw-bold text-primary text-decoration-none">
-                {{ c.title }}
-            </a>
-            <small class="text-muted d-block">{{ c.description }}</small>
-        </td>
-        <td>{{ c.student.username }}</td>
-        <td>{{ c.created_at|date:"M d, Y" }}</td>
-        <td>
-            {% if c.status == 'Pending' %}
-                <span class="badge bg-warning text-dark">⚠️ Pending</span>
-            {% elif c.status == 'In Progress' %}
-                <span class="badge bg-info text-white">⚙️ In Progress</span>
-            {% else %}
-                <span class="badge bg-success">✅ Resolved</span>
-            {% endif %}
-        </td>
-    </tr>
-{% empty %}
-    <tr>
-        <td colspan="5" class="text-center py-4 text-muted">No complaints found in the system.</td>
-    </tr>
-{% endfor %}
+                    <tr>
+                        <!-- Room Number Tag -->
+                        <td class="ps-3 fw-bold text-secondary">
+                            <span class="badge bg-light text-dark border px-2.5 py-1.5">🚪 {{ c.room_number }}</span>
+                        </td>
+                        
+                        <!-- Clickable Complaint Title for Chatting -->
+                        <td>
+                            <a href="{% url 'complaint_detail' c.pk %}" class="fw-bold text-primary text-decoration-none transition-hover d-block">
+                                {{ c.title }}
+                            </a>
+                            <small class="text-muted d-block text-truncate" style="max-width: 300px;">{{ c.description }}</small>
+                        </td>
+                        
+                        <!-- Student Name -->
+                        <td class="text-dark fw-medium">
+                            {{ c.student.username }}
+                        </td>
+                        
+                        <!-- Formatted Date -->
+                        <td class="text-muted small">
+                            {{ c.created_at|date:"M d, Y" }}
+                        </td>
+                        
+                        <!-- Status Badge + Form Update Dropdown -->
+                        <td class="text-center">
+                            <form method="POST" action="{% url 'update_status' c.pk %}" class="d-inline-flex align-items-center gap-2">
+                                {% csrf_token %}
+                                <select name="status" class="form-select form-select-sm fw-bold border-secondary-subtle" onchange="this.form.submit()" style="width: 140px; border-radius: 8px;">
+                                    <option value="Pending" {% if c.status == 'Pending' %}selected{% endif %}>⚠️ Pending</option>
+                                    <option value="In Progress" {% if c.status == 'In Progress' %}selected{% endif %}>⚙️ In Progress</option>
+                                    <option value="Resolved" {% if c.status == 'Resolved' %}selected{% endif %}>✅ Resolved</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <div class="fs-1 mb-2">🎉</div>
+                            <p class="fw-semibold mb-1">No complaints found!</p>
+                            <p class="small text-secondary">All clear. There are currently no active problems logged by students.</p>
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
 
 <style>
-    /* Subtle hover color effect on links */
     .transition-hover:hover {
         color: #0a58ca !important;
         text-decoration: underline !important;
