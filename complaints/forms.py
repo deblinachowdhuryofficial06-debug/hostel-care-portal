@@ -10,7 +10,6 @@ class ComplaintForm(forms.ModelForm):
         fields = ['title', 'description', 'room_number', 'image']
 
 
-# --- NEW CUSTOM REGISTRATION FORMS ---
 class StudentRegistrationForm(UserCreationForm):
     class Meta:
         model = User
@@ -18,25 +17,21 @@ class StudentRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_staff = False 
-        user.is_superuser = False # 🌟 MUST BE FALSE for regular students!
+        user.is_staff = False  # 🌟 Regular student
+        user.is_superuser = False
         if commit:
             user.save()
         return user
+
+
 class WardenRegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs.update({'class': 'form-control', 'placeholder': f'Enter {field_name}'})
-            field.help_text = None 
-
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_staff = True
+        user.is_staff = True  # 🌟 Warden privileges
         if commit:
             user.save()
         return user
