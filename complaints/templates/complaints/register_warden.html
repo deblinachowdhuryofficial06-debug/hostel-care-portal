@@ -1,29 +1,122 @@
 {% extends 'complaints/base.html' %}
 
 {% block content %}
-<div class="card shadow border-0 mx-auto" style="max-width: 500px; border-radius: 12px;">
-    <div class="card-body p-4">
-        <h3 class="card-title text-center mb-2 text-success fw-bold">Warden Registration</h3>
-        <p class="text-center text-muted small mb-4">Register an administrative management security console account</p>
-        
-        <form method="POST" novalidate>
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-secondary small">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-danger small mt-1">
-                            {{ field.errors|striptags }}
+<style>
+    .auth-card {
+        background: #ffffff;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+        overflow: hidden;
+    }
+    
+    .auth-header-warden {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #ffffff;
+        padding: 2.5rem 2rem;
+    }
+
+    .form-control-custom {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        background-color: #f8fafc;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-control-custom:focus {
+        background-color: #ffffff;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+        outline: none;
+    }
+
+    .btn-submit-warden {
+        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        border: none;
+        color: #ffffff;
+        border-radius: 10px;
+        padding: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        transition: all 0.25s ease;
+    }
+
+    .btn-submit-warden:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.4);
+        color: #ffffff;
+    }
+</style>
+
+<div class="row justify-content-center align-items-center py-3">
+    <div class="col-md-7 col-lg-5">
+        <div class="auth-card">
+            
+            <!-- Header Banner -->
+            <div class="auth-header-warden text-center">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-10 rounded-circle mb-3" style="width: 56px; height: 56px;">
+                    <span class="fs-3">🛡️</span>
+                </div>
+                <h3 class="fw-bold mb-1">Warden Registration</h3>
+                <p class="text-white-50 small mb-0">Register staff account for hostel administration</p>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-4 p-md-5">
+                <form method="POST" action="{% url 'register_warden' %}">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger rounded-3 py-2 small mb-4">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
                         </div>
                     {% endif %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-secondary mb-1">
+                                {{ field.label }}
+                            </label>
+                            <input 
+                                type="{{ field.field.widget.input_type|default:'text' }}" 
+                                name="{{ field.html_name }}" 
+                                id="{{ field.id_for_label }}" 
+                                class="form-control form-control-custom {% if field.errors %}is-invalid{% endif %}" 
+                                placeholder="Enter your {{ field.label|lower }}"
+                                required
+                            >
+                            {% if field.errors %}
+                                <div class="invalid-feedback small mt-1">
+                                    {% for error in field.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if field.help_text %}
+                                <div class="form-text text-muted small mt-1" style="font-size: 0.75rem;">
+                                    {{ field.help_text|safe }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-submit-warden w-100 mt-3 shadow-sm">
+                        Register as Warden →
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="small text-muted mb-0">
+                        Already registered as staff? 
+                        <a href="{% url 'login' %}?role=warden" class="fw-bold text-decoration-none text-dark">Log in here</a>
+                    </p>
                 </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-success text-white w-100 py-2 mt-2 fw-bold shadow-sm">Create Warden Account</button>
-        </form>
-        
-        <div class="text-center mt-3">
-            <p class="text-muted small mb-0">Already have an administrative account? <a href="{% url 'login' %}" class="text-decoration-none fw-bold text-success">Login here</a></p>
+            </div>
+
         </div>
     </div>
 </div>

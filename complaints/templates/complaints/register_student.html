@@ -4,58 +4,64 @@
 <style>
     .auth-card {
         background: #ffffff;
-        border: 1px solid #f1f5f9;
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
         overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .auth-header {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        color: white;
+    
+    .auth-header-student {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        color: #ffffff;
         padding: 2.5rem 2rem;
     }
+
     .form-control-custom {
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
         padding: 0.75rem 1rem;
         font-size: 0.95rem;
-        transition: all 0.2s ease;
         background-color: #f8fafc;
+        transition: all 0.2s ease-in-out;
     }
+
     .form-control-custom:focus {
         background-color: #ffffff;
         border-color: #6366f1;
         box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
         outline: none;
     }
-    .btn-submit {
+
+    .btn-submit-student {
         background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
         border: none;
-        color: white;
-        border-radius: 12px;
+        color: #ffffff;
+        border-radius: 10px;
         padding: 0.85rem;
         font-weight: 700;
         letter-spacing: 0.3px;
         transition: all 0.25s ease;
     }
-    .btn-submit:hover {
+
+    .btn-submit-student:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 20px -5px rgba(79, 70, 229, 0.4);
-        color: white;
+        box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+        color: #ffffff;
     }
 </style>
 
-<div class="row justify-content-center align-items-center">
+<div class="row justify-content-center align-items-center py-3">
     <div class="col-md-7 col-lg-5">
         <div class="auth-card">
             
             <!-- Header Banner -->
-            <div class="auth-header text-center position-relative">
-                <div class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-1.5 mb-3 fs-6">
-                    🎓 Student Portal
+            <div class="auth-header-student text-center">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-20 rounded-circle mb-3" style="width: 56px; height: 56px;">
+                    <span class="fs-3">🎓</span>
                 </div>
-                <h3 class="fw-bold mb-1">Create Account</h3>
-                <p class="text-white-50 small mb-0">Join HostelCare to manage your room & lodging complaints</p>
+                <h3 class="fw-bold mb-1">Student Registration</h3>
+                <p class="text-white-50 small mb-0">Create your account to submit and track hostel issues</p>
             </div>
 
             <!-- Form Body -->
@@ -72,8 +78,8 @@
                     {% endif %}
 
                     {% for field in form %}
-                        <div class="mb-4">
-                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-dark mb-1">
+                        <div class="mb-3.5 mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-secondary mb-1">
                                 {{ field.label }}
                             </label>
                             <input 
@@ -99,15 +105,15 @@
                         </div>
                     {% endfor %}
 
-                    <button type="submit" class="btn btn-submit w-100 mt-2 shadow">
-                        Complete Registration →
+                    <button type="submit" class="btn btn-submit-student w-100 mt-3 shadow-sm">
+                        Create Student Account →
                     </button>
                 </form>
 
                 <div class="text-center mt-4 pt-3 border-top">
                     <p class="small text-muted mb-0">
-                        Already have an account? 
-                        <a href="{% url 'login' %}?role=student" class="fw-bold text-indigo text-decoration-none ms-1" style="color: #4f46e5;">Log in</a>
+                        Already registered? 
+                        <a href="{% url 'login' %}?role=student" class="fw-bold text-decoration-none" style="color: #4f46e5;">Log in here</a>
                     </p>
                 </div>
             </div>
