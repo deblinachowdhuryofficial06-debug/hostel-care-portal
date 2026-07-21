@@ -77,33 +77,28 @@
                     {% endif %}
 
                     {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-secondary mb-1">
-                                {{ field.label }}
-                            </label>
-                            <input 
-                                type="{{ field.field.widget.input_type|default:'text' }}" 
-                                name="{{ field.html_name }}" 
-                                id="{{ field.id_for_label }}" 
-                                class="form-control form-control-custom {% if field.errors %}is-invalid{% endif %}" 
-                                placeholder="Enter your {{ field.label|lower }}"
-                                required
-                            >
-                            {% if field.errors %}
-                                <div class="invalid-feedback small mt-1">
-                                    {% for error in field.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if field.help_text %}
-                                <div class="form-text text-muted small mt-1" style="font-size: 0.75rem;">
-                                    {{ field.help_text|safe }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-
+    <div class="mb-3.5 mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-secondary mb-1">
+            {{ field.label }}
+        </label>
+        <input 
+            type="{{ field.field.widget.input_type|default:'text' }}" 
+            name="{{ field.html_name }}" 
+            id="{{ field.id_for_label }}" 
+            class="form-control form-control-custom {% if field.errors %}is-invalid{% endif %}" 
+            placeholder="Enter your {{ field.label|lower }}"
+            required
+        >
+        {% if field.errors %}
+            <div class="invalid-feedback small mt-1">
+                {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- help_text block removed to keep form clean -->
+    </div>
+{% endfor %}
                     <button type="submit" class="btn btn-submit-warden w-100 mt-3 shadow-sm">
                         Register as Warden →
                     </button>
