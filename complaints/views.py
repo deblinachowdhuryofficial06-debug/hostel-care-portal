@@ -27,35 +27,19 @@ def warden_register(request):
         form = WardenRegistrationForm()
     return render(request, 'complaints/register_warden.html', {'form': form})
             
-def login_view(request):
-    role = request.GET.get('role', 'student')
 
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                # 🌟 SMART REDIRECT: Wardens go to warden_dashboard, Students to dashboard
-                if user.is_staff:
-                    return redirect('warden_dashboard')
-                return redirect('dashboard')
-    else:
-        form = AuthenticationForm()
-        
-    return render(request, 'complaints/login.html', {'form': form, 'role': role})
 def logout_view(request):
     logout(request)
-    return redirect('home_portal')
+    return redirect('login')
 
 # --- COMPLAINT CRUD VIEWS ---
 @login_required(login_url='login')
-def student_dashboard(request):
-   my_complaints = Complaint.objects.filter(student=request.user).order_by('-created_at')
-   return render(request, 'complaints/dashboard.html', {'complaints': my_complaints})
-
+def dashboard(request):
+    # Fetch complaints logged by THIS logged-in student
+    complaints = Complaint.objects.filter(student=request.user).order_by('-created_at')
+    
+    # 🌟 Make sure the template name here is 'complaints/dashboard.html'
+    return render(request, 'complaints/dashboard.html', {'complaints': complaints})
 @login_required(login_url='login')
 def create_complaint(request):
     # Create: Handle a student submitting a new complaint form
